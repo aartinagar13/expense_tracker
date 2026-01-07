@@ -1,0 +1,79 @@
+{% extends 'expenses/base.html' %}
+{% block title %}Analytics{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+<h3 class="mb-4">📊 Expense Analytics</h3>
+
+<div class="row">
+
+<div class="col-md-6 mb-4">
+<div class="card p-3 shadow">
+<h5>Category Wise Expenses</h5>
+<canvas id="categoryChart"></canvas>
+</div>
+</div>
+
+<div class="col-md-6 mb-4">
+<div class="card p-3 shadow">
+<h5>Daily Expenses (This Month)</h5>
+<canvas id="dailyChart"></canvas>
+</div>
+</div>
+
+<div class="col-md-12 mb-4">
+<div class="card p-3 shadow">
+<h5>Monthly Expenses</h5>
+<canvas id="monthlyChart"></canvas>
+</div>
+</div>
+
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+const categoryLabels = {{ category_labels|safe }};
+const categoryTotals = {{ category_totals|safe }};
+
+new Chart(document.getElementById('categoryChart'), {
+    type: 'pie',
+    data: {
+        labels: categoryLabels,
+        datasets: [{
+            data: categoryTotals
+        }]
+    }
+});
+
+const dailyLabels = {{ daily_labels|safe }};
+const dailyTotals = {{ daily_totals|safe }};
+
+new Chart(document.getElementById('dailyChart'), {
+    type: 'line',
+    data: {
+        labels: dailyLabels,
+        datasets: [{
+            label: 'Daily Expense',
+            data: dailyTotals,
+            fill: false
+        }]
+    }
+});
+
+const monthlyLabels = {{ monthly_labels|safe }};
+const monthlyTotals = {{ monthly_totals|safe }};
+
+new Chart(document.getElementById('monthlyChart'), {
+    type: 'bar',
+    data: {
+        labels: monthlyLabels,
+        datasets: [{
+            label: 'Monthly Expense',
+            data: monthlyTotals
+        }]
+    }
+});
+</script>
+{% endblock %}
