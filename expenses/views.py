@@ -109,6 +109,7 @@ def logout_view(request):
     messages.success(request, "Logged out successfully!")
     return redirect('login')
 
+@login_required
 def budget_list(request):
     today = timezone.now()
     current_month = today.strftime('%b')  # 'Jan', 'Feb', etc.
@@ -160,8 +161,7 @@ def budget_list(request):
 
     return render(request, 'expenses/budget_list.html', context)
 
-
-
+@login_required
 def add_budget(request):
     current_month = timezone.now().strftime('%b')
     current_year = timezone.now().year
