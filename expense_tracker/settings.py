@@ -24,7 +24,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-7%84nfoncy@q89=x8lwbm7-ofk#w-&!7b9xcj1nu45#(rg*zyl'
 
-# SECURITY WARNING: don't run with debug turned on in production!
+# Ensure you allow all hosts (for Render)
+ALLOWED_HOSTS = ["*"]
+
+# Turn off debug for production
 DEBUG = False
 
 ALLOWED_HOSTS = ["*"]
@@ -119,6 +122,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+# Where Django will collect all static files for deployment
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 # Default primary key field type

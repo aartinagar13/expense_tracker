@@ -109,6 +109,7 @@ def logout_view(request):
     messages.success(request, "Logged out successfully!")
     return redirect('login')
 
+    
 @login_required
 def budget_list(request):
     today = timezone.now()
