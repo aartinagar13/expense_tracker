@@ -5,42 +5,89 @@
 <div class="container mt-5 d-flex justify-content-center">
 
     <div class="card shadow-lg rounded-4 p-5" style="max-width: 520px; width: 100%; background: #ffffff;">
-        
+
         <div class="text-center mb-4">
             <h2 class="fw-bold text-primary">Create Account</h2>
             <p class="text-muted small">Join us and start tracking your expenses!</p>
         </div>
 
-        <form method="post" class="row g-3 align-items-center" novalidate>
+        <form method="post" class="row g-3" novalidate>
             {% csrf_token %}
 
-            {% for field in form %}
-                <div class="col-12 d-flex align-items-center">
-                    
-                    {% if field.name == 'password2' %}
-                        <label class="col-form-label me-3 fw-semibold" style="min-width: 140px;">
-                            Confirm Password
-                        </label>
-                    {% else %}
-                        <label class="col-form-label me-3 fw-semibold" style="min-width: 140px;">
-                            {{ field.label }}
-                        </label>
-                    {% endif %}
+            <!-- First Name -->
+            <div class="col-md-4 input-group">
+                <span class="input-group-text"><i class="bi bi-person-badge"></i></span>
+                <input type="text" name="first_name" class="form-control" placeholder="First Name">
+            </div>
 
-                    {{ field }}
+            <!-- Middle Name -->
+            <div class="col-md-4 input-group">
+                <span class="input-group-text"><i class="bi bi-person"></i></span>
+                <input type="text" name="middle_name" class="form-control" placeholder="Middle Name">
+            </div>
 
-                </div>
+            <!-- Last Name -->
+            <div class="col-md-4 input-group">
+                <span class="input-group-text"><i class="bi bi-person"></i></span>
+                <input type="text" name="last_name" class="form-control" placeholder="Last Name">
+            </div>
 
-                {% for error in field.errors %}
-                    <div class="text-danger small ms-auto mb-2">
-                        {{ error }}
-                    </div>
-                {% endfor %}
-            {% endfor %}
+            <!-- Username -->
+            <div class="col-12 input-group">
+                <span class="input-group-text"><i class="bi bi-person"></i></span>
+                <input type="text" name="username" class="form-control" placeholder="Username" required>
+            </div>
 
-            <div class="col-12 mt-4 d-grid">
+            <!-- Email -->
+            <div class="col-12 input-group">
+                <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                <input type="email" name="email" class="form-control" placeholder="Email address" required>
+            </div>
+
+            <!-- DOB -->
+            <div class="col-md-6 input-group">
+                <span class="input-group-text"><i class="bi bi-calendar"></i></span>
+                <input type="date" name="dob" class="form-control">
+            </div>
+
+            <!-- Profession -->
+            <div class="col-md-6 input-group">
+                <span class="input-group-text"><i class="bi bi-briefcase"></i></span>
+                <input type="text" name="profession" class="form-control" placeholder="Profession">
+            </div>
+
+            <!-- Address -->
+            <div class="col-12 input-group">
+                <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+                <textarea name="address" class="form-control" placeholder="Address"></textarea>
+            </div>
+
+            <!-- Password -->
+            <div class="col-12 input-group">
+                <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                <input type="password" name="password1" class="form-control" placeholder="Password" required>
+            </div>
+
+            <!-- Confirm Password -->
+            <div class="col-12 input-group">
+                <span class="input-group-text"><i class="bi bi-shield-lock"></i></span>
+                <input type="password" name="password2" class="form-control" placeholder="Confirm Password" required>
+            </div>
+
+            <!-- Profile Image -->
+            <div class="col-12 input-group">
+                <span class="input-group-text">
+                    <i class="bi bi-camera"></i>
+                </span>
+
+                <input type="file"
+                    name="profile_image"
+                    class="form-control">
+            </div>
+
+            <div class="col-12 mt-3 d-grid">
                 <button type="submit" class="btn btn-success btn-lg rounded-pill shadow-sm">
-                    Register
+                    <i class="bi bi-person-plus"></i> Register
                 </button>
             </div>
         </form>
@@ -55,33 +102,35 @@
 </div>
 
 <style>
-/* Make all inputs big, curved & clean */
-input, select {
-    width: 100%;
-    border-radius: 0.75rem !important;
-    padding: 12px 14px !important;
-    border: 1px solid #ced4da;
-    transition: 0.3s ease;
-}
+    /* Make all inputs big, curved & clean */
+    input,
+    select {
+        width: 100%;
+        border-radius: 0.75rem !important;
+        padding: 12px 14px !important;
+        border: 1px solid #ced4da;
+        transition: 0.3s ease;
+    }
 
-/* Focus animation */
-input:focus {
-    border-color: #0d6efd;
-    box-shadow: 0 0 8px rgba(13, 110, 253, 0.3);
-    outline: none;
-}
+    /* Focus animation */
+    input:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 8px rgba(13, 110, 253, 0.3);
+        outline: none;
+    }
 
-/* Card animation */
-.card {
-    transition: 0.3s ease;
-}
-.card:hover {
-    transform: translateY(-3px);
-}
+    /* Card animation */
+    .card {
+        transition: 0.3s ease;
+    }
 
-/* Button hover */
-.btn-success:hover {
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
+    .card:hover {
+        transform: translateY(-3px);
+    }
+
+    /* Button hover */
+    .btn-success:hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
 </style>
 {% endblock %}

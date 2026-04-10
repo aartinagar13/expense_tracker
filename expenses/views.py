@@ -15,6 +15,60 @@ from reportlab.pdfgen import canvas
 from django.http import HttpResponse
 from django.utils import timezone
 import calendar
+from .models import UserProfile
+from django.contrib.auth import update_session_auth_hash
+
+# views.py
+
+
+@login_required
+def profile(request):
+    profile, created = UserProfile.objects.get_or_create(user=request.user)
+
+    if request.method == 'POST':
+
+        request.user.first_name = request.POST.get('first_name')
+        request.user.last_name = request.POST.get('last_name')
+        request.user.email = request.POST.get('email')
+        request.user.save()
+
+        profile.middle_name = request.POST.get('middle_name')
+        profile.dob = request.POST.get('dob') or None
+        profile.profession = request.POST.get('profession')
+        profile.address = request.POST.get('address')
+
+        # IMAGE UPLOAD
+        if request.FILES.get('profile_image'):
+            profile.profile_image = request.FILES['profile_image']
+
+        profile.save()
+
+        messages.success(request, "Profile updated successfully!")
+        return redirect('profile')
+
+    return render(request, 'registration/profile.html', {
+        'profile': profile
+    })
+
+
+@login_required
+def change_password(request):
+    if request.method == "POST":
+        old_password = request.POST.get("old_password")
+        new_password = request.POST.get("new_password")
+
+        if request.user.check_password(old_password):
+            request.user.set_password(new_password)
+            request.user.save()
+
+            update_session_auth_hash(request, request.user)
+
+            messages.success(request, "Password changed successfully!")
+            return redirect("profile")
+        else:
+            messages.error(request, "Old password is incorrect!")
+
+    return render(request, "registration/change_password.html")
 
 @login_required
 def dashboard(request):
@@ -73,21 +127,52 @@ def delete_expense(request, id):
     expense.delete()
     return redirect('dashboard')
 
+# def register(request):
+#     if request.method == 'POST':
+#         form = RegisterForm(request.POST)
+#         if form.is_valid():  # Validates password match and all fields
+#             user = form.save()
+#             login(request, user)  # Automatically log in
+#             messages.success(request, "Account created successfully!")
+#             return redirect('dashboard')  # Redirect to dashboard
+#         else:
+#             # Form is invalid → show errors
+#             messages.error(request, "Please correct the errors below.")
+#     else:
+#         form = RegisterForm()
+#     return render(request, 'registration/register.html', {'form': form})
 def register(request):
     if request.method == 'POST':
-        form = RegisterForm(request.POST)
-        if form.is_valid():  # Validates password match and all fields
-            user = form.save()
-            login(request, user)  # Automatically log in
+        form = RegisterForm(request.POST, request.FILES)  # ✅ IMPORTANT
+
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.email = form.cleaned_data.get('email')
+            user.first_name = form.cleaned_data.get('first_name')
+            user.last_name = form.cleaned_data.get('last_name')
+            user.save()
+
+            # create profile
+            UserProfile.objects.create(
+                user=user,
+                middle_name=form.cleaned_data.get('middle_name'),
+                dob=form.cleaned_data.get('dob'),
+                profession=form.cleaned_data.get('profession'),
+                address=form.cleaned_data.get('address'),
+                profile_image=form.cleaned_data.get('profile_image')  # ✅ IMAGE
+            )
+
+            login(request, user)
             messages.success(request, "Account created successfully!")
-            return redirect('dashboard')  # Redirect to dashboard
+            return redirect('dashboard')
+
         else:
-            # Form is invalid → show errors
             messages.error(request, "Please correct the errors below.")
+
     else:
         form = RegisterForm()
-    return render(request, 'registration/register.html', {'form': form})
 
+    return render(request, 'registration/register.html', {'form': form})
 
 # Custom Login
 def login_view(request):
@@ -109,23 +194,28 @@ def logout_view(request):
     messages.success(request, "Logged out successfully!")
     return redirect('login')
 
-    
 @login_required
 def budget_list(request):
     today = timezone.now()
-    current_month = today.strftime('%b')  # 'Jan', 'Feb', etc.
-    current_year = today.year
 
-    # Filter values from GET
-    month = request.GET.get('month', current_month)
-    year = int(request.GET.get('year', current_year))
+    # Get value from input type="month" (format: YYYY-MM)
+    month_year = request.GET.get('month_year')
 
-    # Filter budgets for this month/year
+    if month_year:
+        year, month_number = month_year.split('-')
+        year = int(year)
+        month_number = int(month_number)
+    else:
+        year = today.year
+        month_number = today.month
+
+    # Convert month number → 'Jan', 'Feb'
+    month = calendar.month_abbr[month_number]
+
     budgets = Budget.objects.filter(month=month, year=year)
 
-    # Build budget_data with spent/remaining/percent/over
     budget_data = []
-    month_number = list(calendar.month_abbr).index(month)  # convert 'Jan'->1
+
     for b in budgets:
         spent = Expense.objects.filter(
             category=b.category,
@@ -145,19 +235,11 @@ def budget_list(request):
             'over': over
         })
 
-    # Generate month/year filter dynamically from actual Budget data
-    months = [m[0] for m in Budget._meta.get_field('month').choices]
-
-    # Years available in database + current year if not present
-    years_in_db = Budget.objects.values_list('year', flat=True).distinct()
-    years = sorted(list(set(list(years_in_db) + [current_year])))
-
     context = {
         'budget_data': budget_data,
         'month': month,
         'year': year,
-        'months': months,
-        'years': years,
+        'month_number': month_number,  # needed for input value
     }
 
     return render(request, 'expenses/budget_list.html', context)

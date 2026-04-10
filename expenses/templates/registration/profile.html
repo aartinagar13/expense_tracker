@@ -1,0 +1,123 @@
+{% extends 'expenses/base.html' %}
+
+{% block title %}My Profile{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+<div class="row justify-content-center">
+<div class="col-md-8">
+
+<div class="card shadow-lg border-0 rounded-4 p-4">
+
+    <!-- HEADER -->
+    <div class="text-center mb-4">
+
+        {% if profile.profile_image and profile.profile_image.url %}
+        <img src="{{ profile.profile_image.url }}"
+             class="rounded-circle shadow"
+             width="100" height="100"
+             style="object-fit: cover;">
+        {% else %}
+            <i class="bi bi-person-circle"
+            style="font-size: 90px; color:#6c8cd5;"></i>
+        {% endif %}
+
+        <h3 class="mt-2">{{ user.username }}</h3>
+        <p class="text-muted">{{ user.email }}</p>
+    </div>
+
+    <hr>
+
+    <!-- FORM -->
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="row g-3">
+
+
+            <!-- First Name -->
+            <div class="col-md-6">
+                <label class="form-label">First Name</label>
+                <input type="text" name="first_name"
+                       value="{{ user.first_name }}"
+                       class="form-control rounded-3">
+            </div>
+
+              <!-- Middle Name -->
+              <div class="col-md-6">
+                <label class="form-label">Middle Name</label>
+                <input type="text" name="middle_name"
+                       value="{{ user.middle_name }}"
+                       class="form-control rounded-3">
+            </div>
+
+            <!-- Last Name -->
+            <div class="col-md-6">
+                <label class="form-label">Last Name</label>
+                <input type="text" name="last_name"
+                       value="{{ user.last_name }}"
+                       class="form-control rounded-3">
+            </div>
+
+            <!-- Email -->
+            <div class="col-12">
+                <label class="form-label">Email</label>
+                <input type="email" name="email"
+                       value="{{ user.email }}"
+                       class="form-control rounded-3">
+            </div>
+
+            <!-- DOB -->
+            <div class="col-md-6">
+                <label class="form-label">Date of Birth</label>
+                <input type="date" name="dob"
+                       value="{{ profile.dob|date:'Y-m-d' }}"
+                       class="form-control rounded-3">
+            </div>
+
+            <!-- Profession -->
+            <div class="col-md-6">
+                <label class="form-label">Profession</label>
+                <input type="text" name="profession"
+                       value="{{ profile.profession }}"
+                       class="form-control rounded-3">
+            </div>
+
+            <!-- Address -->
+            <div class="col-12">
+                <label class="form-label">Address</label>
+                <textarea name="address" rows="3"
+                          class="form-control rounded-3">{{ profile.address }}</textarea>
+            </div>
+
+             <!-- Image Upload -->
+             <div class="col-12">
+                <label class="form-label">Profile Image</label>
+                <input type="file" name="profile_image" class="form-control rounded-3">
+            </div>
+
+        </div>
+
+        <!-- BUTTONS -->
+        <div class="d-flex justify-content-between mt-4">
+
+            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary rounded-pill">
+                <i class="bi bi-arrow-left"></i> Back
+            </a>
+
+            <button type="submit" class="btn btn-success rounded-pill px-4">
+                <i class="bi bi-check-circle"></i> Save Profile
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+</div>
+</div>
+
+</div>
+{% endblock %}

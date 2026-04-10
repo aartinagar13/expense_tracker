@@ -6,24 +6,16 @@
 
     <!-- Month/Year Filter -->
     <form method="get" class="d-flex gap-2 align-items-center mb-3">
-        <label class="mb-0">Month:</label>
-        <select name="month" class="form-select w-auto">
-            {% for m in months %}
-                <option value="{{ m }}" {% if m == month %}selected{% endif %}>{{ m }}</option>
-            {% endfor %}
-        </select>
     
-        <label class="mb-0">Year:</label>
-        <select name="year" class="form-select w-auto">
-            {% for y in years %}
-                <option value="{{ y }}" {% if y == year %}selected{% endif %}>{{ y }}</option>
-            {% endfor %}
-        </select>
+        <label class="mb-0">Select Month:</label>
+        
+        <input type="month" name="month_year" 
+               value="{{ year }}-{{ month_number|stringformat:'02d' }}" 
+               class="form-control w-auto">
     
         <button type="submit" class="btn btn-secondary btn-sm">Filter</button>
     </form>
     
-
     <div class="d-flex justify-content-between mb-3">
         <h3>My Budgets ({{ month }}/{{ year }})</h3>
         <a href="{% url 'add_budget' %}" class="btn btn-primary">+ Add Budget</a>

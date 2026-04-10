@@ -2,7 +2,8 @@ from django import forms
 from .models import Expense, CATEGORY_CHOICES, Budget
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-
+from django.core.exceptions import ValidationError
+# forms.py
 class ExpenseForm(forms.ModelForm):
     class Meta:
         model = Expense
@@ -27,12 +28,47 @@ class ExpenseForm(forms.ModelForm):
         self.fields['category'].required = True
 
 # Register form
+# class RegisterForm(UserCreationForm):
+#     email = forms.EmailField(required=True)
+
+#     class Meta:
+#         model = User
+#         fields = ['username', 'email', 'password1', 'password2']
+
+
 class RegisterForm(UserCreationForm):
     email = forms.EmailField(required=True)
+    first_name = forms.CharField(required=True)
+    middle_name = forms.CharField(required=False)
+    last_name = forms.CharField(required=True)
+    dob = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}))
+    profession = forms.CharField(required=False)
+    address = forms.CharField(required=False, widget=forms.Textarea)
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'password1', 'password2']
+        fields = [
+            'username', 'email',
+            'first_name', 'middle_name', 'last_name',
+            'dob', 'profession', 'address',
+            'password1', 'password2'
+        ]
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+
+        if User.objects.filter(email=email).exists():
+            raise ValidationError("Email already exists!")
+
+        return email
+    
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+
+        if User.objects.filter(username=username).exists():
+            raise ValidationError("Username already exists!")
+
+        return username
 
 class BudgetForm(forms.ModelForm):
     class Meta:

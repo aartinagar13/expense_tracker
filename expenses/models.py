@@ -22,6 +22,17 @@ MONTH_CHOICES = [
 ]
 
 
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    middle_name = models.CharField(max_length=100, blank=True)
+    dob = models.DateField(null=True, blank=True)
+    profession = models.CharField(max_length=150, blank=True)
+    address = models.TextField(blank=True)
+    profile_image = models.ImageField(upload_to='profiles/', blank=True, null=True)
+
+    def __str__(self):
+        return self.user.username
+
 class Expense(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
